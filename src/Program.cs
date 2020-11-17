@@ -86,6 +86,15 @@ namespace SassBuilder
                         break;
                 }
             }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                switch (RuntimeInformation.OSArchitecture)
+                {
+                    case Architecture.X64:
+                        runtimePath = "osx-x64";
+                        break;
+                }
+            }
 
             if (String.IsNullOrEmpty(runtimePath))
             {
