@@ -1,0 +1,5 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="SassBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet $(MSBuildThisFileDirectory)SassBuilder.dll -r $(MSBuildProjectDirectory)" />
+  </Target>
+</Project>

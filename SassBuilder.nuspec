@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SassBuilder</id>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <title>SassBuilder</title>
     <summary>MSBuild extension. Automatically build **/*.scss to *.css</summary>
     <authors>JustForFun.click</authors>
@@ -15,4 +15,13 @@
     <license type="expression">MIT</license>
     <icon>sass.png</icon>
   </metadata>
+  <files>
+    <file src="LICENSE.md" target="LICENSE.md"/>
+    <file src="README.md" target="README.md"/>
+    <file src="sass.png" target="sass.png"/>
+    <file src="build\SassBuilder.targets" target="build"/> 
+    <file src="src\bin\Release\net5.0\publish\*.dll" target="build"/>
+    <file src="src\bin\Release\net5.0\publish\*.json" target="build"/>
+    <file src="src\bin\Release\net5.0\publish\runtimes\**" target="build/runtimes"/>
+  </files>
 </package>

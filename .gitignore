@@ -2,7 +2,5 @@
 bin/
 obj/
 
-package/
-!package/SassBuilder.nuspec
-
 *.user
+*.nupkg
