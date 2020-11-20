@@ -1,7 +1,9 @@
 ﻿using LibSassHost;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace SassBuilder
@@ -10,6 +12,12 @@ namespace SassBuilder
     {
         public bool Recursive { get; set; } = false;
         public List<string> Srcs { get; } = new List<string>();
+
+        /// <summary>
+        /// Excludes files/directories.
+        /// Null means use .gitignore. Empty means no excludes.
+        /// </summary>
+        public List<string> Excludes { get; set; }
     }
 
     class Program
@@ -55,7 +63,7 @@ namespace SassBuilder
                 }
                 else
                 {
-                    options.Srcs.Add(str);
+                    options.Srcs.Add(Path.GetFullPath(str));
                 }
             }
             return options;
@@ -120,7 +128,7 @@ namespace SassBuilder
                 }
                 else if (Directory.Exists(src))
                 {
-                    ProcessDirectory(src, options.Recursive);
+                    ProcessDirectory(src, options.Recursive, options.Excludes == null ? GetExcludesFromGitIgnore(src) : options.Excludes);
                 }
                 else
                 {
@@ -135,12 +143,75 @@ namespace SassBuilder
             File.WriteAllText(Path.ChangeExtension(file, ".css"), result.CompiledContent);
         }
 
-        static void ProcessDirectory(string directory, bool recursive)
+        static void ProcessDirectory(string directory, bool recursive, IEnumerable<string> excludes)
         {
-            foreach (var file in Directory.GetFiles(directory, "*.scss", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+            if (excludes.Contains(directory + "/"))
             {
-                ProcessFile(file);
+                return;
             }
+
+            foreach (var file in Directory.GetFiles(directory, "*.scss", SearchOption.TopDirectoryOnly))
+            {
+                if (!excludes.Contains(file))
+                {
+                    ProcessFile(file);
+                }
+            }
+
+            if (recursive)
+            {
+                foreach (var dir in Directory.GetDirectories(directory))
+                {
+                    ProcessDirectory(dir, recursive, excludes);
+                }
+            }
+        }
+
+        static IEnumerable<string> GetExcludesFromGitIgnore(string dir)
+        {
+            try
+            {
+                LogDebug($"Get git ignore from {dir}");
+                var process = new Process()
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "git",
+                        Arguments = "ls-files --others --ignored --exclude-standard --directory",
+                        RedirectStandardOutput = true,
+                        WorkingDirectory = dir,
+                    }
+                };
+                process.Start();
+                var output = process.StandardOutput.ReadToEnd();
+                LogDebug($"{process.StartInfo.FileName} {process.StartInfo.Arguments}:\n{output}");
+                process.WaitForExit();
+                if (process.ExitCode != 0)
+                {
+                    LogDebug($"GetExcludesFromGitIgnore failed, exit code: {process.ExitCode}");
+                    return Enumerable.Empty<string>();
+                }
+                return output.Split("\n", StringSplitOptions.RemoveEmptyEntries).Select(s =>
+                {
+                    var fullPath = Path.Combine(dir, s);
+                    LogDebug($"Add exclude path '{fullPath}' from gitignore");
+                    return fullPath;
+                }).ToArray();
+            }
+            catch (Exception ex)
+            {
+                LogDebug($"GetExcludesFromGitIgnore exception: {ex.Message}\n{ex.StackTrace}");
+
+                // Ignore all errors.
+                return Enumerable.Empty<string>();
+            }
+        }
+
+        static void LogDebug(string str)
+        {
+#if DEBUG
+            Console.WriteLine("[SassBuilder]: " + str);
+#endif
         }
     }
 }
