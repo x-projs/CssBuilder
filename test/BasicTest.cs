@@ -105,11 +105,20 @@ namespace SassBuilder.Test
             }
 
             string testDataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", testName);
-            foreach (string dirPath in Directory.GetDirectories(testDataFolder, "*", SearchOption.AllDirectories)) {
+            foreach (string dirPath in Directory.GetDirectories(testDataFolder, "*", SearchOption.AllDirectories))
+            {
                 Directory.CreateDirectory(dirPath.Replace(testDataFolder, testFolder));
             }
-            foreach (string newPath in Directory.GetFiles(testDataFolder, "*.*", SearchOption.AllDirectories)) {
-                File.Copy(newPath, newPath.Replace(testDataFolder, testFolder));
+            foreach (string newPath in Directory.GetFiles(testDataFolder, "*.*", SearchOption.AllDirectories))
+            {
+                if (newPath.EndsWith(".gitignore.template"))
+                {
+                    File.Copy(newPath, newPath.Replace(".gitignore.template", ".gitignore").Replace(testDataFolder, testFolder));
+                }
+                else
+                {
+                    File.Copy(newPath, newPath.Replace(testDataFolder, testFolder));
+                }
             }
 
             return testFolder;
