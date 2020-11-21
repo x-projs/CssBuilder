@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SassBuilder</id>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <title>SassBuilder</title>
     <summary>MSBuild extension. Automatically build **/*.scss to *.css</summary>
     <authors>JustForFun.click</authors>
