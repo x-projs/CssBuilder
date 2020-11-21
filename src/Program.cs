@@ -20,9 +20,9 @@ namespace SassBuilder
         public List<string> Excludes { get; set; }
     }
 
-    class Program
+    public class Program
     {
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace SassBuilder
 
         static void ProcessDirectory(string directory, bool recursive, IEnumerable<string> excludes)
         {
-            if (excludes.Contains(directory + "/"))
+            if (excludes.Contains(directory + Path.DirectorySeparatorChar))
             {
                 return;
             }
@@ -185,6 +185,10 @@ namespace SassBuilder
                 process.Start();
                 var output = process.StandardOutput.ReadToEnd();
                 LogDebug($"{process.StartInfo.FileName} {process.StartInfo.Arguments}:\n{output}");
+                if (Path.DirectorySeparatorChar != '/')
+                {
+                    output = output.Replace('/', Path.DirectorySeparatorChar);
+                }
                 process.WaitForExit();
                 if (process.ExitCode != 0)
                 {

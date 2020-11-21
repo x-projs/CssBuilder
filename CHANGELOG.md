@@ -1,3 +1,6 @@
+0.1.4:
+* Fix exclude folders/files issue under windows.
+
 0.1.3:
 * Fix build fail if the path contains space.
 * Exclude folders/files in `.gitignore` (the project need be inside a git repository).
