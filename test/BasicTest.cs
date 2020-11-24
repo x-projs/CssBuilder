@@ -14,12 +14,12 @@ namespace SassBuilder.Test
             var exitCode = SassBuilder.Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
-            VerifyFiles(testFolder, new (string, string, string)[]
-            {
-                ("test.scss", "test.css", "body {\n  color: red; }\n"),
-                ("sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n"),
-                ("sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", "body {\n  color: yellow; }\n")
-            });
+            VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sass-test.sass", "sass-test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n");
+            VerifyFiles(testFolder, "sub-folder/sass-test.sass", "sub-folder/sass-test.css", "body {\n  color: blue; }\n");
+            VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", "body {\n  color: yellow; }\n");
+            VerifyFiles(testFolder, "sub-folder/sub-folder/sass-test.sass", "sub-folder/sub-folder/sass-test.css", "body {\n  color: yellow; }\n");
         }
 
         [Fact]
@@ -29,12 +29,12 @@ namespace SassBuilder.Test
             var exitCode = SassBuilder.Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
-            VerifyFiles(testFolder, new (string, string, string)[]
-            {
-                ("test.scss", "test.css", "body {\n  color: red; }\n"),
-                ("sub-folder/test.scss", "sub-folder/test.css", null),
-                ("sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", null)
-            });
+            VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sass-test.sass", "sass-test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", null);
+            VerifyFiles(testFolder, "sub-folder/sass-test.sass", "sub-folder/sass-test.css", null);
+            VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", null);
+            VerifyFiles(testFolder, "sub-folder/sub-folder/sass-test.sass", "sub-folder/sub-folder/sass-test.css", null);
         }
 
         [Fact]
@@ -64,31 +64,33 @@ namespace SassBuilder.Test
             exitCode = SassBuilder.Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
-            VerifyFiles(testFolder, new (string, string, string)[]
-            {
-                ("a.scss", "a.css", "body {\n  color: red; }\n"),
-                ("b.scss", "b.css", null),
-                ("sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n"),
-                ("sub-folder/ignored-folder/test.scss", "sub-folder/ignored-folder/test.css", null)
-            });
+            VerifyFiles(testFolder, "a.scss", "a.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sass-a.sass", "sass-a.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "b.scss", "b.css", null);
+            VerifyFiles(testFolder, "sass-b.sass", "sass-b.css", null);
+            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n");
+            VerifyFiles(testFolder, "sub-folder/sass-test.sass", "sub-folder/sass-test.css", "body {\n  color: blue; }\n");
+            VerifyFiles(testFolder, "sub-folder/ignored-folder/test.scss", "sub-folder/ignored-folder/test.css", null);
+            VerifyFiles(testFolder, "sub-folder/ignored-folder/sass-test.sass", "sub-folder/ignored-folder/sass-test.css", null);
+            VerifyFiles(testFolder, "sub-folder/ignore-scss/test.scss", "sub-folder/ignore-scss/test.css", null);
+            VerifyFiles(testFolder, "sub-folder/ignore-scss/sass-test.sass", "sub-folder/ignore-scss/sass-test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sub-folder/ignore-sass/test.scss", "sub-folder/ignore-sass/test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sub-folder/ignore-sass/sass-test.sass", "sub-folder/ignore-sass/sass-test.css", null);
         }
 
-        private void VerifyFiles(string testFolder, (string originalFile, string resultFile, string expectedContent)[] verifyItems)
+        private void VerifyFiles(string testFolder, string originalFile, string resultFile, string expectedContent)
         {
-            foreach (var item in verifyItems)
-            {
-                Assert.True(File.Exists(Path.Combine(testFolder, item.originalFile)));
+            Assert.True(File.Exists(Path.Combine(testFolder, originalFile)));
 
-                var resultFile = Path.Combine(testFolder, item.resultFile);
-                if (item.expectedContent != null)
-                {
-                    Assert.True(File.Exists(resultFile));
-                    Assert.Equal(item.expectedContent, File.ReadAllText(resultFile));
-                }
-                else
-                {
-                    Assert.False(File.Exists(resultFile));
-                }
+            resultFile = Path.Combine(testFolder, resultFile);
+            if (expectedContent != null)
+            {
+                Assert.True(File.Exists(resultFile));
+                Assert.Equal(expectedContent, File.ReadAllText(resultFile));
+            }
+            else
+            {
+                Assert.False(File.Exists(resultFile));
             }
         }
 
