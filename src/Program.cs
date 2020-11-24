@@ -150,11 +150,14 @@ namespace SassBuilder
                 return;
             }
 
-            foreach (var file in Directory.GetFiles(directory, "*.scss", SearchOption.TopDirectoryOnly))
+            foreach (var ext in new[] { "*.scss", "*.sass" })
             {
-                if (!excludes.Contains(file))
+                foreach (var file in Directory.GetFiles(directory, ext, SearchOption.TopDirectoryOnly))
                 {
-                    ProcessFile(file);
+                    if (!excludes.Contains(file))
+                    {
+                        ProcessFile(file);
+                    }
                 }
             }
 

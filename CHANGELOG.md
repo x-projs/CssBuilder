@@ -1,3 +1,6 @@
+0.1.5:
+* Support *.sass file.
+
 0.1.4:
 * Fix exclude folders/files issue under windows.
 

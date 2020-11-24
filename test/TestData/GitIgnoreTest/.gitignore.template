@@ -1,2 +1,5 @@
 b.scss
+sass-b.sass
 ignored-folder/
+sub-folder/ignore-sass/*.sass
+sub-folder/ignore-scss/*.scss

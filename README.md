@@ -1,9 +1,9 @@
 # SassBuilder
 
 Simple wrapper of [libSassHost](https://github.com/Taritsyn/LibSassHost).
-It will add a MSBuild target for `.scss` files in your Visual Studio projects.
+It will add a MSBuild target for `.scss/.sass` files in your Visual Studio projects.
 
-All `.scss` files (exclude files in `.gitignore` if this is a git repository) under the
+All `.scss/.sass` files (exclude files in `.gitignore` if this is a git repository) under the
 project folder will be compiled to `.css` file.
 
 [DotNet 5.0](https://dotnet.microsoft.com/download/dotnet/5.0) is required. Works for
