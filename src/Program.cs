@@ -40,7 +40,7 @@ namespace SassBuilder
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.Error.WriteLine($"Error: {ex.Message}");
                 return 1;
             }
         }
@@ -139,8 +139,8 @@ namespace SassBuilder
 
         static void ProcessFile(string file)
         {
-            var result = SassCompiler.CompileFile(file);
-            File.WriteAllText(Path.ChangeExtension(file, ".css"), result.CompiledContent);
+            var result = file.EndsWith(".less") ? CompileLessFile(file) : SassCompiler.CompileFile(file).CompiledContent;
+            File.WriteAllText(Path.ChangeExtension(file, ".css"), result);
         }
 
         static void ProcessDirectory(string directory, bool recursive, IEnumerable<string> excludes)
@@ -150,7 +150,7 @@ namespace SassBuilder
                 return;
             }
 
-            foreach (var ext in new[] { "*.scss", "*.sass" })
+            foreach (var ext in new[] { "*.less", "*.sass", "*.scss", })
             {
                 foreach (var file in Directory.GetFiles(directory, ext, SearchOption.TopDirectoryOnly))
                 {
@@ -214,11 +214,30 @@ namespace SassBuilder
             }
         }
 
+        static string CompileLessFile(string file)
+        {
+            LessEngine.CurrentDirectory = Path.GetDirectoryName(file);
+            return LessEngine.TransformToCss(File.ReadAllText(file), file);
+        }
+
         static void LogDebug(string str)
         {
 #if DEBUG
             Console.WriteLine("[SassBuilder]: " + str);
 #endif
+        }
+
+        static dotless.Core.ILessEngine _lessEngine;
+        static dotless.Core.ILessEngine LessEngine
+        {
+            get
+            {
+                if (_lessEngine == null)
+                {
+                    _lessEngine = new dotless.Core.EngineFactory().GetEngine();
+                }
+                return _lessEngine;
+            }
         }
     }
 }

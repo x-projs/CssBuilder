@@ -14,12 +14,20 @@ namespace SassBuilder.Test
             var exitCode = SassBuilder.Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
-            VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
+            // Verify *.less
+            VerifyFiles(testFolder, "less-test.less", "less-test.css", "body {\n  color: red;\n}\n");
+            VerifyFiles(testFolder, "sub-folder/less-test.less", "sub-folder/less-test.css", "body {\n  color: blue;\n}\n");
+            VerifyFiles(testFolder, "sub-folder/sub-folder/less-test.less", "sub-folder/sub-folder/less-test.css", "body {\n  color: yellow;\n}\n");
+
+            // Verify *.sass
             VerifyFiles(testFolder, "sass-test.sass", "sass-test.css", "body {\n  color: red; }\n");
-            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n");
             VerifyFiles(testFolder, "sub-folder/sass-test.sass", "sub-folder/sass-test.css", "body {\n  color: blue; }\n");
-            VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", "body {\n  color: yellow; }\n");
             VerifyFiles(testFolder, "sub-folder/sub-folder/sass-test.sass", "sub-folder/sub-folder/sass-test.css", "body {\n  color: yellow; }\n");
+
+            // Verify *.scss
+            VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n");
+            VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", "body {\n  color: yellow; }\n");
         }
 
         [Fact]
@@ -29,12 +37,20 @@ namespace SassBuilder.Test
             var exitCode = SassBuilder.Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
-            VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
+            // Verify compile *.less
+            VerifyFiles(testFolder, "less-test.less", "less-test.css", "body {\n  color: red;\n}\n");
+            VerifyFiles(testFolder, "sub-folder/less-test.less", "sub-folder/less-test.css", null);
+            VerifyFiles(testFolder, "sub-folder/sub-folder/less-test.less", "sub-folder/sub-folder/less-test.css", null);
+
+            // Verify compile *.sass
             VerifyFiles(testFolder, "sass-test.sass", "sass-test.css", "body {\n  color: red; }\n");
-            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", null);
             VerifyFiles(testFolder, "sub-folder/sass-test.sass", "sub-folder/sass-test.css", null);
-            VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", null);
             VerifyFiles(testFolder, "sub-folder/sub-folder/sass-test.sass", "sub-folder/sub-folder/sass-test.css", null);
+
+            // Verify compile *.scss
+            VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
+            VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", null);
+            VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", null);
         }
 
         [Fact]
