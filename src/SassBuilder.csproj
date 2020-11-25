@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="dotless.Core" Version="1.6.7" />
     <PackageReference Include="LibSassHost" Version="1.3.2" />
     <PackageReference Include="LibSassHost.Native.linux-x64" Version="1.3.2" />
     <PackageReference Include="LibSassHost.Native.win-x64" Version="1.3.2" />

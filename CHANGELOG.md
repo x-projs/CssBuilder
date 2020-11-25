@@ -1,3 +1,6 @@
+0.1.6:
+* Support *.less file. (experiment)
+
 0.1.5:
 * Support *.sass file.
 
