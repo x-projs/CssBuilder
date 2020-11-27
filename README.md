@@ -1,4 +1,4 @@
-# SassBuilder
+# CssBuilder
 
 Simple wrapper of [dotless](https://github.com/dotless/dotless) and [libSassHost](https://github.com/Taritsyn/LibSassHost).
 It will add a MSBuild target for `.less/.sass/.scss` files in your Visual Studio projects.
@@ -14,4 +14,4 @@ project folder will be compiled to `.css` file.
 
 ## Install
 
-You can use it from nuget package: https://www.nuget.org/packages/SassBuilder
+You can use it from nuget package: https://www.nuget.org/packages/CssBuilder

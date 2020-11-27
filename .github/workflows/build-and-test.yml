@@ -30,7 +30,26 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build -c Debug --no-restore
+        run: dotnet build -c Release --no-restore
 
       - name: Test
-        run: dotnet test -c Debug --no-build --verbosity normal
+        run: dotnet test -c Release --no-build
+
+      - name: Setup Nuget
+        if: github.event_name == 'push'
+        uses: NuGet/setup-nuget@v1
+
+      - name: Publish
+        if: github.event_name == 'push'
+        run: dotnet publish -c Release --no-build
+
+      - name: Pack
+        if: github.event_name == 'push'
+        run: nuget pack
+
+      - name: Upload
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v2
+        with:
+          name: nuget-package
+          path: CssBuilder.*.nupkg

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Xunit;
 
-namespace SassBuilder.Test
+namespace CssBuilder.Test
 {
     public class BasicTest
     {
@@ -11,7 +11,7 @@ namespace SassBuilder.Test
         public void RecursiveTest()
         {
             var testFolder = PrepareTestFolder("RecursiveTest");
-            var exitCode = SassBuilder.Program.Main(new string[] { "-r", testFolder });
+            var exitCode = CssBuilder.Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
             // Verify *.less
@@ -34,7 +34,7 @@ namespace SassBuilder.Test
         public void NonRecursiveTest()
         {
             var testFolder = PrepareTestFolder("RecursiveTest");
-            var exitCode = SassBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             // Verify compile *.less
@@ -77,7 +77,7 @@ namespace SassBuilder.Test
             exitCode = process.ExitCode;
             Assert.Equal(0, exitCode);
 
-            exitCode = SassBuilder.Program.Main(new string[] { "-r", testFolder });
+            exitCode = CssBuilder.Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.scss", "a.css", "body {\n  color: red; }\n");
