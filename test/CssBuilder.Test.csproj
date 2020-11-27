@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SassBuilder.csproj" />
+    <ProjectReference Include="..\src\CssBuilder.csproj" />
   </ItemGroup>
 
   <ItemGroup>

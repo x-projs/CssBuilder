@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace SassBuilder
+namespace CssBuilder
 {
     class Options
     {
@@ -223,7 +223,7 @@ namespace SassBuilder
         static void LogDebug(string str)
         {
 #if DEBUG
-            Console.WriteLine("[SassBuilder]: " + str);
+            Console.WriteLine("[CssBuilder]: " + str);
 #endif
         }
 

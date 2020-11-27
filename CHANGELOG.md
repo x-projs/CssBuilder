@@ -1,3 +1,6 @@
+0.1.7:
+* Change name to CssBuilder.
+
 0.1.6:
 * Support *.less file. (experiment)
 
