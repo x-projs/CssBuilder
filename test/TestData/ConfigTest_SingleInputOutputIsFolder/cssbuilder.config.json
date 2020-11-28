@@ -1,0 +1,6 @@
+[
+    {
+        "src": "a.less",
+        "output": "out/overall.css" 
+    }
+]

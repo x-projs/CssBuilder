@@ -1,10 +1,12 @@
 ﻿using LibSassHost;
+using Microsoft.Extensions.FileSystemGlobbing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace CssBuilder
 {
@@ -18,6 +20,23 @@ namespace CssBuilder
         /// Null means use .gitignore. Empty means no excludes.
         /// </summary>
         public List<string> Excludes { get; set; }
+    }
+
+    class CssBuilderConfigJson
+    {
+        /// <summary>
+        /// Can be a single filename or a glob of pattern.
+        /// If this option is not existed, all supported files will be processed.
+        /// </summary>
+        public string src { get; set; }
+
+        /// <summary>
+        /// Can be a single filename (if src is a single filename also).
+        /// If this options is not existed, files will be output in the same folder.
+        /// </summary>
+        public string output { get; set; }
+
+        public string _workdingDirectory { get; set; }
     }
 
     public class Program
@@ -120,15 +139,17 @@ namespace CssBuilder
 
         static void Process(Options options)
         {
+            var defaultConfig = new CssBuilderConfigJson();
             foreach (var src in options.Srcs)
             {
                 if (File.Exists(src))
                 {
-                    ProcessFile(src);
+                    ProcessFile(src, defaultConfig);
                 }
                 else if (Directory.Exists(src))
                 {
-                    ProcessDirectory(src, options.Recursive, options.Excludes == null ? GetExcludesFromGitIgnore(src) : options.Excludes);
+                    defaultConfig._workdingDirectory = src;
+                    ProcessDirectory(src, options.Recursive, options.Excludes == null ? GetExcludesFromGitIgnore(src) : options.Excludes, defaultConfig);
                 }
                 else
                 {
@@ -137,35 +158,105 @@ namespace CssBuilder
             }
         }
 
-        static void ProcessFile(string file)
+        static void ProcessFile(string file, CssBuilderConfigJson config)
         {
-            var result = file.EndsWith(".less") ? CompileLessFile(file) : SassCompiler.CompileFile(file).CompiledContent;
-            File.WriteAllText(Path.ChangeExtension(file, ".css"), result);
+            string result = null;
+            if (file.EndsWith(".less"))
+            {
+                result = CompileLessFile(file);
+            }
+            else if (file.EndsWith(".sass") || file.EndsWith(".scss"))
+            {
+;                result = SassCompiler.CompileFile(file).CompiledContent;
+            }
+
+            if (result != null)
+            {
+                if (config.output == null)
+                {
+                    File.WriteAllText(Path.ChangeExtension(file, ".css"), result);
+                }
+                else if (config.output.EndsWith(".css"))
+                {
+                    var fullName = Path.Combine(config._workdingDirectory, config.output);
+                    Directory.CreateDirectory(Path.GetDirectoryName(fullName));
+                    File.WriteAllText(fullName, result);
+                }
+                else
+                {
+                    var fullName = Path.Combine(config._workdingDirectory, config.output, Path.GetFileNameWithoutExtension(file) + ".css");
+                    Directory.CreateDirectory(Path.GetDirectoryName(fullName));
+                    File.WriteAllText(fullName, result);
+                }
+            }
         }
 
-        static void ProcessDirectory(string directory, bool recursive, IEnumerable<string> excludes)
+        static void ProcessDirectory(string directory, bool recursive, IEnumerable<string> excludes, CssBuilderConfigJson config)
         {
             if (excludes.Contains(directory + Path.DirectorySeparatorChar))
             {
                 return;
             }
 
-            foreach (var ext in new[] { "*.less", "*.sass", "*.scss", })
+            // If there is a "cssbuilder.config.json" file, use it to override the default one.
+            List<CssBuilderConfigJson> configs = null;
+            var cssBuilderConfigFile = Path.Combine(directory, "cssbuilder.config.json");
+            if (File.Exists(cssBuilderConfigFile))
             {
-                foreach (var file in Directory.GetFiles(directory, ext, SearchOption.TopDirectoryOnly))
+                try
                 {
-                    if (!excludes.Contains(file))
+                    configs = JsonSerializer.Deserialize<List<CssBuilderConfigJson>>(File.ReadAllText(cssBuilderConfigFile));
+                    foreach (var c in configs)
                     {
-                        ProcessFile(file);
+                        c._workdingDirectory = Path.GetDirectoryName(cssBuilderConfigFile);
                     }
+                }
+                catch(JsonException)
+                {
+                    Console.Error.WriteLine($"Parse configure file: {cssBuilderConfigFile} failed");
+                    throw;
                 }
             }
 
-            if (recursive)
+            if (configs == null)
             {
-                foreach (var dir in Directory.GetDirectories(directory))
+                configs = new List<CssBuilderConfigJson>() { config };
+            }
+
+            foreach (var c in configs)
+            {
+                if (c.src == null)
                 {
-                    ProcessDirectory(dir, recursive, excludes);
+                    foreach (var ext in new[] { "*.less", "*.sass", "*.scss", })
+                    {
+                        foreach (var file in Directory.GetFiles(directory, ext, SearchOption.TopDirectoryOnly))
+                        {
+                            if (!excludes.Contains(file))
+                            {
+                                ProcessFile(file, c);
+                            }
+                        }
+                    }
+
+                    if (recursive)
+                    {
+                        foreach (var dir in Directory.GetDirectories(directory))
+                        {
+                            ProcessDirectory(dir, recursive, excludes, c);
+                        }
+                    }
+                }
+                else
+                {
+                    var matcher = new Matcher();
+                    matcher.AddInclude(c.src);
+                    foreach (var file in matcher.GetResultsInFullPath(directory))
+                    {
+                        if (!excludes.Contains(file))
+                        {
+                            ProcessFile(file, c);
+                        }
+                    }
                 }
             }
         }

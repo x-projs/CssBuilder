@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CssBuilder</id>
-    <version>0.1.7</version>
+    <version>0.1.8-preview.1</version>
     <title>CssBuilder</title>
     <summary>MSBuild extension. Automatically build *.less/*.sass/*.scss to *.css</summary>
     <authors>JustForFun.click</authors>
