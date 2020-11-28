@@ -1,3 +1,6 @@
+0.1.8:
+* Support configuration file. See [https://github.com/justforfun-click/CssBuilder/wiki/Configuration](https://github.com/justforfun-click/CssBuilder/wiki/Configuration).
+
 0.1.7:
 * Change name to CssBuilder.
 

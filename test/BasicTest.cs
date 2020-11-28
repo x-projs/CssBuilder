@@ -1,11 +1,10 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using Xunit;
 
 namespace CssBuilder.Test
 {
-    public class BasicTest
+    public class BasicTest : TestBase
     {
         [Fact]
         public void RecursiveTest()
@@ -92,54 +91,6 @@ namespace CssBuilder.Test
             VerifyFiles(testFolder, "sub-folder/ignore-scss/sass-test.sass", "sub-folder/ignore-scss/sass-test.css", "body {\n  color: red; }\n");
             VerifyFiles(testFolder, "sub-folder/ignore-sass/test.scss", "sub-folder/ignore-sass/test.css", "body {\n  color: red; }\n");
             VerifyFiles(testFolder, "sub-folder/ignore-sass/sass-test.sass", "sub-folder/ignore-sass/sass-test.css", null);
-        }
-
-        private void VerifyFiles(string testFolder, string originalFile, string resultFile, string expectedContent)
-        {
-            Assert.True(File.Exists(Path.Combine(testFolder, originalFile)));
-
-            resultFile = Path.Combine(testFolder, resultFile);
-            if (expectedContent != null)
-            {
-                Assert.True(File.Exists(resultFile));
-                Assert.Equal(expectedContent, File.ReadAllText(resultFile));
-            }
-            else
-            {
-                Assert.False(File.Exists(resultFile));
-            }
-        }
-
-        private string PrepareTestFolder(string testName)
-        {
-            string testFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestTmp", testName);
-            if (Directory.Exists(testFolder))
-            {
-                foreach (var info in new DirectoryInfo(testFolder).GetFileSystemInfos("*", SearchOption.AllDirectories))
-                {
-                    info.Attributes = FileAttributes.Normal;
-                }
-                Directory.Delete(testFolder, recursive: true);
-            }
-
-            string testDataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", testName);
-            foreach (string dirPath in Directory.GetDirectories(testDataFolder, "*", SearchOption.AllDirectories))
-            {
-                Directory.CreateDirectory(dirPath.Replace(testDataFolder, testFolder));
-            }
-            foreach (string newPath in Directory.GetFiles(testDataFolder, "*.*", SearchOption.AllDirectories))
-            {
-                if (newPath.EndsWith(".gitignore.template"))
-                {
-                    File.Copy(newPath, newPath.Replace(".gitignore.template", ".gitignore").Replace(testDataFolder, testFolder));
-                }
-                else
-                {
-                    File.Copy(newPath, newPath.Replace(testDataFolder, testFolder));
-                }
-            }
-
-            return testFolder;
         }
     }
 }
