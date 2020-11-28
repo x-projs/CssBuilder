@@ -4,7 +4,6 @@ using Xunit;
 
 namespace CssBuilder.Test
 {
-    [Collection("Sequential")]
     public class TestBase
     {
         protected string PrepareTestFolder(string testName)
