@@ -41,7 +41,10 @@ namespace CssBuilder.Test
 
         protected void VerifyFiles(string testFolder, string originalFile, string resultFile, string expectedContent)
         {
-            Assert.True(File.Exists(Path.Combine(testFolder, originalFile)));
+            if (originalFile != null)
+            {
+                Assert.True(File.Exists(Path.Combine(testFolder, originalFile)));
+            }
 
             resultFile = Path.Combine(testFolder, resultFile);
             if (expectedContent != null)

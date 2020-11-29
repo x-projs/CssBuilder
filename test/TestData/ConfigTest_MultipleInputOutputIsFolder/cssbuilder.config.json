@@ -1,0 +1,6 @@
+[
+    {
+        "src": [ "a.less", "b/c/c.less" ],
+        "output": "out" 
+    }
+]

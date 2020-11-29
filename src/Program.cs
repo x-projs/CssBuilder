@@ -28,7 +28,7 @@ namespace CssBuilder
         /// Can be a single filename or a glob of pattern.
         /// If this option is not existed, all supported files will be processed.
         /// </summary>
-        public string src { get; set; }
+        public object src { get; set; }
 
         /// <summary>
         /// Can be a single filename (if src is a single filename also).
@@ -37,6 +37,8 @@ namespace CssBuilder
         public string output { get; set; }
 
         public string _workdingDirectory { get; set; }
+
+        public List<string> _srcs { get; set; }
     }
 
     public class Program
@@ -167,7 +169,7 @@ namespace CssBuilder
             }
             else if (file.EndsWith(".sass") || file.EndsWith(".scss"))
             {
-;                result = SassCompiler.CompileFile(file).CompiledContent;
+                result = SassCompiler.CompileFile(file).CompiledContent;
             }
 
             if (result != null)
@@ -178,9 +180,7 @@ namespace CssBuilder
                 }
                 else if (config.output.EndsWith(".css"))
                 {
-                    var fullName = Path.Combine(config._workdingDirectory, config.output);
-                    Directory.CreateDirectory(Path.GetDirectoryName(fullName));
-                    File.WriteAllText(fullName, result);
+                    File.AppendAllText(config.output, result);
                 }
                 else
                 {
@@ -205,10 +205,11 @@ namespace CssBuilder
             {
                 try
                 {
+                    var workingDirectory = Path.GetDirectoryName(cssBuilderConfigFile);
                     configs = JsonSerializer.Deserialize<List<CssBuilderConfigJson>>(File.ReadAllText(cssBuilderConfigFile));
                     foreach (var c in configs)
                     {
-                        c._workdingDirectory = Path.GetDirectoryName(cssBuilderConfigFile);
+                        NormalizeConfig(c, workingDirectory);
                     }
                 }
                 catch(JsonException)
@@ -225,7 +226,7 @@ namespace CssBuilder
 
             foreach (var c in configs)
             {
-                if (c.src == null)
+                if (c._srcs == null)
                 {
                     foreach (var ext in new[] { "*.less", "*.sass", "*.scss", })
                     {
@@ -249,8 +250,8 @@ namespace CssBuilder
                 else
                 {
                     var matcher = new Matcher();
-                    matcher.AddInclude(c.src);
-                    foreach (var file in matcher.GetResultsInFullPath(directory))
+                    matcher.AddIncludePatterns(c._srcs);
+                    foreach (var file in matcher.GetResultsInFullPath(directory).OrderBy(f => f))
                     {
                         if (!excludes.Contains(file))
                         {
@@ -302,6 +303,49 @@ namespace CssBuilder
 
                 // Ignore all errors.
                 return Enumerable.Empty<string>();
+            }
+        }
+
+        static void NormalizeConfig(CssBuilderConfigJson config, string workingDirectory)
+        {
+            config._workdingDirectory = workingDirectory;
+
+            if (config.src != null)
+            {
+                config._srcs = new List<string>();
+
+                var element = (JsonElement)config.src;
+                if (element.ValueKind == JsonValueKind.String)
+                {
+                    config._srcs.Add(element.GetString());
+                }
+                else if (element.ValueKind == JsonValueKind.Array)
+                {
+                    for (var i = 0; i < element.GetArrayLength(); ++i)
+                    {
+                        var e = element[i];
+                        if (e.ValueKind != JsonValueKind.String)
+                        {
+                            throw new JsonException("`src` must be string or array of strings.");
+                        }
+                        config._srcs.Add(e.GetString());
+                    }
+                }
+                else
+                {
+                    throw new JsonException("`src` must be string or array of strings.");
+                }
+            }
+
+            if (config.output != null)
+            {
+                if (config.output.EndsWith(".css"))
+                {
+                    var fullName = Path.Combine(config._workdingDirectory, config.output);
+                    Directory.CreateDirectory(Path.GetDirectoryName(fullName));
+                    File.Delete(fullName);
+                    config.output = fullName;
+                }
             }
         }
 
