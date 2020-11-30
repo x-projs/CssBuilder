@@ -10,7 +10,7 @@ namespace CssBuilder.Test
         public void RecursiveTest()
         {
             var testFolder = PrepareTestFolder("RecursiveTest");
-            var exitCode = CssBuilder.Program.Main(new string[] { "-r", testFolder });
+            var exitCode = Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
             // Verify *.less
@@ -33,7 +33,7 @@ namespace CssBuilder.Test
         public void NonRecursiveTest()
         {
             var testFolder = PrepareTestFolder("RecursiveTest");
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             // Verify compile *.less
@@ -76,7 +76,7 @@ namespace CssBuilder.Test
             exitCode = process.ExitCode;
             Assert.Equal(0, exitCode);
 
-            exitCode = CssBuilder.Program.Main(new string[] { "-r", testFolder });
+            exitCode = Program.Main(new string[] { "-r", testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.scss", "a.css", "body {\n  color: red; }\n");

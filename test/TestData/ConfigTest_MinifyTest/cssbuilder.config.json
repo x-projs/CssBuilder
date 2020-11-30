@@ -1,0 +1,9 @@
+[
+    {
+        "src": [ "a.less", "b.scss"],
+        "minify": true
+    },
+    {
+        "src": "c.sass"
+    }
+]

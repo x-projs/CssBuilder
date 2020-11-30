@@ -9,7 +9,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_InvalidConfigFileTest");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(1, exitCode);
         }
 
@@ -18,7 +18,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_SingleInputNoOutputSetting");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", "body {\n  color: red;\n}\n");
@@ -31,7 +31,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_SingleInputOutputIsFile");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", null);
@@ -43,7 +43,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_SingleInputOutputIsFolder");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", null);
@@ -55,7 +55,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_GlobInputNoOutputSetting");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", "body {\n  color: red;\n}\n");
@@ -68,7 +68,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_GlobInputOutputIsFile");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "out/a.css", null);
@@ -82,7 +82,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_GlobInputOutputIsFolder");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "out/a.css", "body {\n  color: red;\n}\n");
@@ -95,7 +95,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_MultipleConfig");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "out/overall.css", "body {\n  color: red;\n}\n");
@@ -108,7 +108,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_MultipleInputNoOutputSetting");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", "body {\n  color: red;\n}\n");
@@ -121,7 +121,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_MultipleInputOutputIsFile");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", null);
@@ -135,7 +135,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_MultipleInputOutputIsFolder");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "out/a.css", "body {\n  color: red;\n}\n");
@@ -148,7 +148,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_SingleAndGlobInputNoOutputSetting");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", "body {\n  color: red;\n}\n");
@@ -161,7 +161,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_SingleAndGlobInputOutputIsFile");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", null);
@@ -175,7 +175,7 @@ namespace CssBuilder.Test
         {
             var testFolder = PrepareTestFolder("ConfigTest_SingleAndGlobInputOutputIsFolder");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "out/a.css", "body {\n  color: red;\n}\n");
@@ -184,11 +184,24 @@ namespace CssBuilder.Test
         }
 
         [Fact]
+        public void MinifyTest()
+        {
+            var testFolder = PrepareTestFolder("ConfigTest_MinifyTest");
+
+            var exitCode = Program.Main(new string[] { testFolder });
+            Assert.Equal(0, exitCode);
+
+            VerifyFiles(testFolder, "a.less", "a.css", "body{color:red}");
+            VerifyFiles(testFolder, "b.scss", "b.css", "body{color:blue}\n");
+            VerifyFiles(testFolder, "c.sass", "c.css", "body {\n  color: yellow; }\n");
+        }
+
+        [Fact]
         public void InputNotExist()
         {
             var testFolder = PrepareTestFolder("ConfigTest_InputNotExist");
 
-            var exitCode = CssBuilder.Program.Main(new string[] { testFolder });
+            var exitCode = Program.Main(new string[] { testFolder });
             Assert.Equal(0, exitCode);
 
             VerifyFiles(testFolder, "a.less", "a.css", null);

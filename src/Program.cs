@@ -36,6 +36,8 @@ namespace CssBuilder
         /// </summary>
         public string output { get; set; }
 
+        public bool minify { get; set; }
+
         public string _workdingDirectory { get; set; }
 
         public List<string> _srcs { get; set; }
@@ -165,11 +167,11 @@ namespace CssBuilder
             string result = null;
             if (file.EndsWith(".less"))
             {
-                result = CompileLessFile(file);
+                result = CompileLessFile(file, config);
             }
             else if (file.EndsWith(".sass") || file.EndsWith(".scss"))
             {
-                result = SassCompiler.CompileFile(file).CompiledContent;
+                result = CompileSassScssFile(file, config);
             }
 
             if (result != null)
@@ -349,10 +351,23 @@ namespace CssBuilder
             }
         }
 
-        static string CompileLessFile(string file)
+        static string CompileLessFile(string file, CssBuilderConfigJson config)
         {
-            LessEngine.CurrentDirectory = Path.GetDirectoryName(file);
-            return LessEngine.TransformToCss(File.ReadAllText(file), file);
+            var lessConfig = dotless.Core.configuration.DotlessConfiguration.GetDefault();
+            lessConfig.MinifyOutput = config.minify;
+            var lessEngine = new dotless.Core.EngineFactory(lessConfig).GetEngine();
+            lessEngine.CurrentDirectory = Path.GetDirectoryName(file);
+            return lessEngine.TransformToCss(File.ReadAllText(file), file);
+        }
+
+        static string CompileSassScssFile(string file, CssBuilderConfigJson config)
+        {
+            var sassConfig = new CompilationOptions();
+            if (config.minify)
+            {
+                sassConfig.OutputStyle = OutputStyle.Compressed;
+            }
+            return SassCompiler.CompileFile(file, null, null, sassConfig).CompiledContent;
         }
 
         static void LogDebug(string str)
@@ -360,19 +375,6 @@ namespace CssBuilder
 #if DEBUG
             Console.WriteLine("[CssBuilder]: " + str);
 #endif
-        }
-
-        static dotless.Core.ILessEngine _lessEngine;
-        static dotless.Core.ILessEngine LessEngine
-        {
-            get
-            {
-                if (_lessEngine == null)
-                {
-                    _lessEngine = new dotless.Core.EngineFactory().GetEngine();
-                }
-                return _lessEngine;
-            }
         }
     }
 }
