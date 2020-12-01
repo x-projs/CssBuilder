@@ -26,6 +26,12 @@ jobs:
         with:
           dotnet-version: "5.0"
 
+      - name: Setup Nodejs
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+      - run: cd node && npm install
+
       - name: Restore
         run: dotnet restore
 
@@ -40,15 +46,15 @@ jobs:
         uses: NuGet/setup-nuget@v1
 
       - name: Publish
-        if: github.event_name == 'push'
+        if: matrix.os == 'windows-latest'
         run: dotnet publish -c Release --no-build
 
       - name: Pack
-        if: github.event_name == 'push'
+        if: matrix.os == 'windows-latest'
         run: nuget pack
 
       - name: Upload
-        if: github.event_name == 'push'
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v2
         with:
           name: nuget-package

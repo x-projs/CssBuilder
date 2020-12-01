@@ -27,6 +27,11 @@ namespace CssBuilder.Test
             VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
             VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", "body {\n  color: blue; }\n");
             VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", "body {\n  color: yellow; }\n");
+
+            // Verify *.styl
+            VerifyFiles(testFolder, "styl-test.styl", "styl-test.css", "body {\n  color: #f00;\n}\n");
+            VerifyFiles(testFolder, "sub-folder/styl-test.styl", "sub-folder/styl-test.css", "body {\n  color: #f00;\n}\n");
+            VerifyFiles(testFolder, "sub-folder/sub-folder/styl-test.styl", "sub-folder/sub-folder/styl-test.css", "body {\n  color: #f00;\n}\n");
         }
 
         [Fact]
@@ -50,6 +55,11 @@ namespace CssBuilder.Test
             VerifyFiles(testFolder, "test.scss", "test.css", "body {\n  color: red; }\n");
             VerifyFiles(testFolder, "sub-folder/test.scss", "sub-folder/test.css", null);
             VerifyFiles(testFolder, "sub-folder/sub-folder/test.scss", "sub-folder/sub-folder/test.css", null);
+
+            // Verify *.styl
+            VerifyFiles(testFolder, "styl-test.styl", "styl-test.css", "body {\n  color: #f00;\n}\n");
+            VerifyFiles(testFolder, "sub-folder/styl-test.styl", "sub-folder/styl-test.css", null);
+            VerifyFiles(testFolder, "sub-folder/sub-folder/styl-test.styl", "sub-folder/sub-folder/styl-test.css", null);
         }
 
         [Fact]
