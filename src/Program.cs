@@ -99,10 +99,6 @@ namespace CssBuilder
             {
                 switch (RuntimeInformation.OSArchitecture)
                 {
-                    case Architecture.X86:
-                        runtimePath = "win-x86";
-                        break;
-
                     case Architecture.X64:
                         runtimePath = "win-x64";
                         break;
@@ -173,6 +169,10 @@ namespace CssBuilder
             {
                 result = CompileSassScssFile(file, config);
             }
+            else if (file.EndsWith(".styl"))
+            {
+                result = CompileStylusFile(file, config);
+            }
 
             if (result != null)
             {
@@ -230,7 +230,7 @@ namespace CssBuilder
             {
                 if (c._srcs == null)
                 {
-                    foreach (var ext in new[] { "*.less", "*.sass", "*.scss", })
+                    foreach (var ext in new[] { "*.less", "*.sass", "*.scss", "*.styl" })
                     {
                         foreach (var file in Directory.GetFiles(directory, ext, SearchOption.TopDirectoryOnly))
                         {
@@ -370,6 +370,36 @@ namespace CssBuilder
             return SassCompiler.CompileFile(file, null, null, sassConfig).CompiledContent;
         }
 
+        static string CompileStylusFile(string file, CssBuilderConfigJson config)
+        {
+            var nodeModulesPath = Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "node_modules");
+            var process = new Process();
+            var options = "-q -p";
+            if (config.minify)
+            {
+                options += " -c";
+            }
+            process.StartInfo = new ProcessStartInfo()
+            {
+                FileName = "node",
+                Arguments = $"{nodeModulesPath}/stylus/bin/stylus {options} {file}",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                WorkingDirectory = config._workdingDirectory,
+            };
+            process.StartInfo.Environment["NODE_PATH"] = nodeModulesPath;
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            var err = process.StandardError.ReadToEnd();
+            LogDebug($"{process.StartInfo.FileName} {process.StartInfo.Arguments}:\n{output}\n\nerr: {err}");
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+            {
+                LogDebug($"compile stylus failed, exit code: {process.ExitCode}");
+                throw new Exception($"Compile {file} failed, err: {err}");
+            }
+            return output;
+        }
         static void LogDebug(string str)
         {
 #if DEBUG

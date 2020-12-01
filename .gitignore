@@ -1,6 +1,7 @@
 .vs/
 bin/
 obj/
+node/node_modules/
 
 *.user
 *.nupkg

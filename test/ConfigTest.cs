@@ -194,6 +194,7 @@ namespace CssBuilder.Test
             VerifyFiles(testFolder, "a.less", "a.css", "body{color:red}");
             VerifyFiles(testFolder, "b.scss", "b.css", "body{color:blue}\n");
             VerifyFiles(testFolder, "c.sass", "c.css", "body {\n  color: yellow; }\n");
+            VerifyFiles(testFolder, "d.styl", "d.css", "body{color:#f00}");
         }
 
         [Fact]

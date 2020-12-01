@@ -1,6 +1,6 @@
 [
     {
-        "src": [ "a.less", "b.scss"],
+        "src": [ "a.less", "b.scss", "d.styl" ],
         "minify": true
     },
     {

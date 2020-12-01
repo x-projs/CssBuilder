@@ -1,3 +1,7 @@
+0.2.0:
+* Breaking change: win-x86 support is removed.
+* Support *.styl (stylus) files.
+
 0.1.8:
 * Support configuration file. See [https://github.com/justforfun-click/CssBuilder/wiki/Configuration](https://github.com/justforfun-click/CssBuilder/wiki/Configuration).
 
@@ -5,7 +9,7 @@
 * Change name to CssBuilder.
 
 0.1.6:
-* Support *.less file. (experiment)
+* Support *.less file.
 
 0.1.5:
 * Support *.sass file.
