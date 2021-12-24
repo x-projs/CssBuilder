@@ -1,3 +1,6 @@
+0.2.1:
+* Update to .NET 6.0
+
 0.2.0:
 * Breaking change: win-x86 support is removed.
 * Support *.styl (stylus) files.

@@ -5,7 +5,7 @@ Automatically compile `.less/.sass/.scss/.styl` files in your Visual Studio/DotN
 Configuration file is not required, but you can use it to control the compile processing.
 See https://github.com/justforfun-click/CssBuilder/wiki/Configuration
 
-[DotNet 5.0](https://dotnet.microsoft.com/download/dotnet/5.0) is required. Works for
+[DotNet 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) is required. Works for
 * Windows/x64
 * Linux/x64
 * OSX/x64
