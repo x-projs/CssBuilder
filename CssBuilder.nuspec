@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CssBuilder</id>
-    <version>0.2.0-preview.1</version>
+    <version>0.2.1-preview.1</version>
     <title>CssBuilder</title>
     <summary>MSBuild extension. Automatically build *.less/*.sass/*.scss/*.styl to *.css</summary>
     <authors>JustForFun.click</authors>
@@ -21,9 +21,9 @@
     <file src="CHANGELOG.md" target="CHANGELOG.md"/>
     <file src="css.png" target="css.png"/>
     <file src="build\CssBuilder.targets" target="build"/> 
-    <file src="src\bin\Release\net5.0\publish\*.dll" target="build"/>
-    <file src="src\bin\Release\net5.0\publish\*.json" target="build"/>
-    <file src="src\bin\Release\net5.0\publish\runtimes\**" target="build/runtimes"/>
+    <file src="src\bin\Release\net6.0\publish\*.dll" target="build"/>
+    <file src="src\bin\Release\net6.0\publish\*.json" target="build"/>
+    <file src="src\bin\Release\net6.0\publish\runtimes\**" target="build/runtimes"/>
     <file src="node\node_modules\**" target="build/node_modules"/>
   </files>
 </package>
